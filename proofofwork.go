@@ -1,6 +1,11 @@
 package main
 
-import "math/big"
+import (
+	"bytes"
+	"crypto/sha256"
+	"fmt"
+	"math/big"
+)
 
 // 定义一个工作量证明的结构
 type ProofOfWork struct {
@@ -28,7 +33,47 @@ func NewProofOfWork(block *Block) *ProofOfWork {
 }
 
 // 提供不断计算hash的函数
-
 // Run
+func (pow *ProofOfWork) Run() ([]byte, uint64) {
+
+	var nonce uint64
+	block := pow.block
+	var hash [32]byte
+
+	for {
+		// 1. 拼装数据（区块、随机数）
+		tmp := [][]byte{
+			Uint64ToByte(block.Version),
+			block.PrevHash,
+			block.MerkelRoot,
+			Uint64ToByte(block.TimeStamp),
+			Uint64ToByte(block.Difficulty),
+			Uint64ToByte(nonce),
+			block.Data,
+		}
+		blockInfo := bytes.Join(tmp, []byte{})
+
+		// 2. 哈希运算
+		hash = sha256.Sum256(blockInfo)
+		// 3. 跟数target比较
+		temInt := big.Int{}
+		// 将我们得到的hash数组转化成一个big.Int
+		temInt.SetBytes(hash[:])
+
+		//比较当前的哈希与目标哈希值。小于就i找到了，没小于i就继续找
+		if temInt.Cmp(pow.target) == -1 {
+			fmt.Printf("mining success!! hash: %x, nonce: %d\n", hash, nonce)
+			//break
+			return hash[:], nonce
+		} else {
+			//	没找到 继续找
+			nonce++
+		}
+		//	找到了：退出返回
+		//  没找到：继续找，随机数加一
+	}
+
+	//return hash[:], nonce
+}
 
 // IsValid
