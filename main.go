@@ -6,6 +6,7 @@ func main() {
 	bc := NewBlockChain()
 	bc.AddBlock("first transaction")
 	bc.AddBlock("second transaction")
+	// 迭代器
 	/*for i, block := range bc.blocks {
 		fmt.Printf("===========当前区块高度： %d ==============\n", i)
 		fmt.Printf("前区块哈希： %x\n", block.PrevHash)
