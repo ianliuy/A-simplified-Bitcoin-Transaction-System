@@ -30,7 +30,7 @@ func NewBlockChain() *BlockChain {
 	// 1. 打开数据库
 	// func Open(path string, mode os.FileMode, options *Options) (*DB, error) {
 	db, err := bolt.Open(blockChainDB, 0600, nil)
-	defer db.Close()
+	//defer db.Close()
 	if err != nil {
 		log.Panic("errors occur when opening database")
 	}
@@ -74,23 +74,36 @@ func NewBlockChain() *BlockChain {
 
 // 创世块
 func GenesisBlock() *Block {
-	return NewBlock("创世块", []byte{})
+	return NewBlock("genesisBlock", []byte{})
 }
 
 // 5. 添加区块
 func (bc *BlockChain) AddBlock(data string) {
-	/*
-		// 添加区块数据
-		// 更新lastHashKey的value
+	// 添加区块数据
+	// 更新lastHashKey的value
+	db := bc.db
+	lastHash := bc.tail
 
-		// 根据下标获取前区块哈希
-		// lastHashKey -> blockN.Hash
-		lastBlock := bc.blocks[len(bc.blocks)-1]
-		prevHash := lastBlock.Hash
-		// 1. 创建新区块
-		block := NewBlock(data, prevHash)
-		// 2. 添加到区块链数组中
-		bc.blocks = append(bc.blocks, block)
-	*/
+	db.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(blockBucket))
+		if bucket == nil {
+			log.Panic("errors occur: bucket is null")
+		}
+		block := NewBlock(data, lastHash)
+		// 写数据
+		// hash作为key block的字节流作为value
+		// func (b *Bucket) Put(key []byte, value []byte) error {
+		bucket.Put(block.Hash, block.Serialize())
+		bucket.Put([]byte("LastHashKey"), block.Hash)
+		lastHash = block.Hash
+
+		// update blockChain in memory, perticularly, its tail
+		bc.tail = lastHash
+
+		return nil
+	})
+	// 根据下标获取前区块哈希
+	// 1. 创建新区块
+	// 2. 添加到区块链数组中
 
 }

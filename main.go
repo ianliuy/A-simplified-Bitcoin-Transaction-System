@@ -4,8 +4,8 @@ package main
 
 func main() {
 	bc := NewBlockChain()
-	bc.AddBlock("第二笔交易")
-	bc.AddBlock("第三笔交易")
+	bc.AddBlock("first transaction")
+	bc.AddBlock("second transaction")
 	/*for i, block := range bc.blocks {
 		fmt.Printf("===========当前区块高度： %d ==============\n", i)
 		fmt.Printf("前区块哈希： %x\n", block.PrevHash)
