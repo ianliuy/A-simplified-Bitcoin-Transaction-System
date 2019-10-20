@@ -54,9 +54,14 @@ func NewBlockChain() *BlockChain {
 			// 写数据
 			// hash作为key block的字节流作为value
 			// func (b *Bucket) Put(key []byte, value []byte) error {
-			bucket.Put(genesisBlock.Hash, genesisBlock.toByte())
+			bucket.Put(genesisBlock.Hash, genesisBlock.Serialize())
 			bucket.Put([]byte("LastHashKey"), genesisBlock.Hash)
 			lastHash = genesisBlock.Hash
+
+			/*//for test
+			blockBytes := bucket.Get(genesisBlock.Hash)
+			block := Deserialize(blockBytes)
+			fmt.Printf("block info: %s\n", block)*/
 
 		} else {
 			// func (b *Bucket) Get(key []byte) []byte {

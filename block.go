@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
+	"encoding/gob"
 	"log"
 	"time"
 )
@@ -67,9 +68,44 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 	return &block
 }
 
-func (block *Block) toByte() []byte {
-	//TODO
-	return []byte{}
+// 序列化 把一个自定义的数据转化为字节流
+// 使用gob包 / binary.Write()
+func (block *Block) Serialize() []byte {
+	// gob.encode
+	var buffer bytes.Buffer
+
+	// 使用gob进行序列化u得到字节流
+	// 定义一个编码器
+	// 使用编码器进行编码
+	/*	type Encoder struct {
+		mutex      sync.Mutex              // each item must be sent atomically
+		w          []io.Writer             // where to send the data
+		sent       map[reflect.Type]typeId // which types we've already sent
+		countState *encoderState           // stage for writing counts
+		freeList   *encoderState           // list of free encoderStates; avoids reallocation
+		byteBuf    encBuffer               // buffer for top-level encoderState
+		err        error
+	}*/
+	// func NewEncoder(w io.Writer) *Encoder {
+	encoder := gob.NewEncoder(&buffer)
+	// func (enc *Encoder) Encode(e interface{}) error {
+	err := encoder.Encode(&block)
+	if err != nil {
+		log.Panic("errors occur when encode")
+	}
+	//fmt.Printf("value of xiaoMing: %v\n", xiaoMing)
+	return buffer.Bytes()
+}
+
+func Deserialize(data []byte) Block {
+	decoder := gob.NewDecoder(bytes.NewReader(data))
+	var block Block
+	err := decoder.Decode(&block)
+	if err != nil {
+		log.Panic("errors occur when decode")
+	}
+	//fmt.Printf("decode result: %v\n",daMing)
+	return block
 }
 
 // 3. 生成哈希
