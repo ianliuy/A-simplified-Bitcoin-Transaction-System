@@ -51,17 +51,11 @@ func NewBlockChain() *BlockChain {
 			// 创建一个创世块并作为第一个区块添加到区块链中
 			genesisBlock := GenesisBlock()
 
-			// 写数据
 			// hash作为key block的字节流作为value
 			// func (b *Bucket) Put(key []byte, value []byte) error {
 			bucket.Put(genesisBlock.Hash, genesisBlock.Serialize())
 			bucket.Put([]byte("LastHashKey"), genesisBlock.Hash)
 			lastHash = genesisBlock.Hash
-
-			/*//for test
-			blockBytes := bucket.Get(genesisBlock.Hash)
-			block := Deserialize(blockBytes)
-			fmt.Printf("block info: %s\n", block)*/
 
 		} else {
 			// func (b *Bucket) Get(key []byte) []byte {
