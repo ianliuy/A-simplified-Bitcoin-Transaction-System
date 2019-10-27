@@ -49,7 +49,9 @@ func (pow *ProofOfWork) Run() ([]byte, uint64) {
 			Uint64ToByte(block.TimeStamp),
 			Uint64ToByte(block.Difficulty),
 			Uint64ToByte(nonce),
-			block.Data,
+			// 只对区块头做哈希值，区块提通过Merkelroot产生影响
+			//block.Data,
+
 		}
 		blockInfo := bytes.Join(tmp, []byte{})
 

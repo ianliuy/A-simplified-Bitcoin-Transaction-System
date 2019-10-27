@@ -28,6 +28,8 @@ type Block struct {
 	Hash []byte
 	// 3. 数据
 	Data []byte
+	// 真实的交易数组
+	Transactions []*Transaction
 }
 
 // 1. 补充区块其他字段
@@ -45,7 +47,7 @@ func Uint64ToByte(num uint64) []byte {
 }
 
 // 2. 创建区块
-func NewBlock(data string, prevBlockHash []byte) *Block {
+func NewBlock(txs []*Transaction, prevBlockHash []byte) *Block {
 	block := Block{
 		Version:    00,
 		PrevHash:   prevBlockHash,
@@ -54,8 +56,10 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 		Difficulty: 0,        //随便写的无效值
 		Nonce:      0,        // 无效值
 		Hash:       []byte{}, //先空 //TODO
-		Data:       []byte(data),
+		//Data:       []byte(data),
+		Transactions: txs,
 	}
+	block.MerkelRoot = block.MakeMerkelRoot()
 	//block.SetHash()
 	// 创建一个pow对象
 	pow := NewProofOfWork(&block)
@@ -134,4 +138,10 @@ func (block *Block) SetHash() {
 	// 2. sha256
 	hash := sha256.Sum256(blockInfo)
 	block.Hash = hash[:]
+}
+
+// 模拟梅克尔根。只对数据做拼接处理
+func (block *Block) MakeMerkelRoot() []byte {
+	//TODO
+	return []byte{}
 }

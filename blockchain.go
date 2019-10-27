@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"fmt"
 	"github.com/boltdb/bolt"
 	"log"
 )
@@ -19,7 +21,7 @@ const blockChainDB = "blockChain.db" // database name
 const blockBucket = "blockBucket"    // database name
 
 // 5. 定义一个区块链
-func NewBlockChain() *BlockChain {
+func NewBlockChain(address string) *BlockChain {
 
 	/*return &BlockChain{
 		blocks: []*Block{genesisBlock},
@@ -49,8 +51,8 @@ func NewBlockChain() *BlockChain {
 			}
 
 			// 创建一个创世块并作为第一个区块添加到区块链中
-			genesisBlock := GenesisBlock()
-
+			genesisBlock := GenesisBlock(address)
+			fmt.Printf("genesisBlock:%s\n", genesisBlock)
 			// hash作为key block的字节流作为value
 			// func (b *Bucket) Put(key []byte, value []byte) error {
 			bucket.Put(genesisBlock.Hash, genesisBlock.Serialize())
@@ -67,12 +69,14 @@ func NewBlockChain() *BlockChain {
 }
 
 // 创世块
-func GenesisBlock() *Block {
-	return NewBlock("genesisBlock", []byte{})
+func GenesisBlock(address string) *Block {
+	coinbase := NewCoinbaseTX(address, "genesisBlock")
+	// func NewBlock(txs []*Transaction, prevBlockHash []byte) *Block {
+	return NewBlock([]*Transaction{coinbase}, []byte{})
 }
 
 // 5. 添加区块
-func (bc *BlockChain) AddBlock(data string) {
+func (bc *BlockChain) AddBlock(txs []*Transaction) {
 	// 添加区块数据
 	// 更新lastHashKey的value
 	db := bc.db
@@ -83,7 +87,7 @@ func (bc *BlockChain) AddBlock(data string) {
 		if bucket == nil {
 			log.Panic("errors occur: bucket is null")
 		}
-		block := NewBlock(data, lastHash)
+		block := NewBlock(txs, lastHash)
 		// 写数据
 		// hash作为key block的字节流作为value
 		// func (b *Bucket) Put(key []byte, value []byte) error {
@@ -99,5 +103,31 @@ func (bc *BlockChain) AddBlock(data string) {
 	// 根据下标获取前区块哈希
 	// 1. 创建新区块
 	// 2. 添加到区块链数组中
+}
 
+func (bc *BlockChain) PrintChain() {
+	blockHeight := 0
+	bc.db.View(func(tx *bolt.Tx) error {
+		// Assume bucket exists and has keys
+		b := tx.Bucket([]byte("blockBucket"))
+		// 从第一个Key value进行遍历，到最后一个固定的Key时直接返回
+		b.ForEach(func(k, v []byte) error {
+			if bytes.Equal(k, []byte("LastHashKey")) {
+				return nil
+			}
+			block := Deserialize(v)
+			fmt.Printf("Height:%d\n", blockHeight)
+			blockHeight++
+			fmt.Printf("版本号： %d\n", block.Version)
+			fmt.Printf("前区块哈希： %x\n", block.PrevHash)
+			fmt.Printf("梅克尔根： %x\n", block.MerkelRoot)
+			fmt.Printf("时间戳： %x\n", block.TimeStamp)
+			fmt.Printf("难度值（随便写的）： %d\n", block.Difficulty)
+			fmt.Printf("随机数： %d\n", block.Nonce)
+			fmt.Printf("区块哈希： %x\n", block.Hash)
+			fmt.Printf("区块数据： %s\n", block.Transactions[0].TXInputs[0].Sig)
+			return nil
+		})
+		return nil
+	})
 }

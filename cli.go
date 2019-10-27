@@ -30,8 +30,8 @@ func (cli *CLI) Run() {
 	fmt.Printf("args[4]=%v\n", args[4])
 	fmt.Println("args[1]:", args[1])*/
 	if len(args) < 2 {
-		fmt.Printf("Invalid command")
-		fmt.Printf(Usage)
+		// fmt.Printf("Invalid command")
+		// fmt.Printf(Usage)
 	}
 	// 2. 分析命令
 	cmd := args[0]
@@ -61,8 +61,8 @@ func (cli *CLI) Run() {
 		fmt.Printf("print block\n")
 		cli.PrintBlockChain()
 	default:
-		fmt.Printf("Invalid command")
-		fmt.Printf(Usage)
+		// fmt.Printf("Invalid command")
+		// fmt.Printf(Usage)
 	}
 	// 分析命令
 	// 1. 添加区块 2. 打印区块
