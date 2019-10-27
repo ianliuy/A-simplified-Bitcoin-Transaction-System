@@ -28,7 +28,7 @@ type TXInput struct {
 
 type TXOutput struct {
 	// 转账金额
-	value float64
+	Value float64
 	// 锁定脚本，用地址模拟
 	PubKeyHash string
 }
