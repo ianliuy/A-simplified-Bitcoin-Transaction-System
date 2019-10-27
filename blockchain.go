@@ -134,7 +134,49 @@ func (bc *BlockChain) PrintChain() {
 // 找到指定地址的所有UTXO
 func (bc *BlockChain) FindUTXOs(address string) []TXOutput {
 	var UTXO []TXOutput
-	//TODO
+	// 定义一个map保存消费过的utxo，key是output交易过的id，value是交易中索引的数组
+	// map[交易id][]int64
+	spentOutputs := make(map[string][]int64)
+
+	// 先遍历区块
+	// 再遍历交易
+	// 再遍历output，找到与自己相关的UTXO（再添加output之前检查是否已经消耗过）
+	// 遍历input，找到自己花费过的utxo（自己花费过的标示出来）
+	// 创建迭代器
+	it := bc.NewIterator()
+	for {
+		// 1. 遍历区块
+		block := it.Next()
+		// 2. 遍历交易
+		for _, tx := range block.Transactions {
+			fmt.Printf("current txid: %x\n", tx.TXID)
+			// 3.遍历output
+			for i, output := range tx.TXOutputs {
+				fmt.Printf("current idx: %d\n", i)
+				// 如果这个output的地址与目标地址相同，返回utxo数组中
+				if output.PubKeyHash == address {
+					UTXO = append(UTXO, output)
+				}
+			}
+			// 遍历input，找到自己花费过的utxo（自己花费过的标示出来）
+			for _, input := range tx.TXInputs {
+				//判断当前input是否和目标一致
+				// 如果相同就加进去
+				if input.Sig == address {
+					//spentOutputs := make(map[string][]int64)
+					indexArray := spentOutputs[string(input.TXid)]
+					indexArray = append(indexArray, input.Index)
+
+				}
+			}
+		}
+		// 3.
+
+		if len(block.PrevHash) == 0 {
+			break
+			fmt.Printf("区块遍历完成")
+		}
+	}
 
 	return UTXO
 }
