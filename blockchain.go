@@ -58,7 +58,6 @@ func NewBlockChain(address string) *BlockChain {
 			bucket.Put(genesisBlock.Hash, genesisBlock.Serialize())
 			bucket.Put([]byte("LastHashKey"), genesisBlock.Hash)
 			lastHash = genesisBlock.Hash
-
 		} else {
 			// func (b *Bucket) Get(key []byte) []byte {
 			lastHash = bucket.Get([]byte("LastHashKey"))
@@ -130,4 +129,12 @@ func (bc *BlockChain) PrintChain() {
 		})
 		return nil
 	})
+}
+
+// 找到指定地址的所有UTXO
+func (bc *BlockChain) FindUTXOs(address string) []TXOutput {
+	var UTXO []TXOutput
+	//TODO
+
+	return UTXO
 }
