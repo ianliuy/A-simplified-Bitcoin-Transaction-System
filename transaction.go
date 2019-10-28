@@ -47,6 +47,20 @@ func (tx *Transaction) SetHash() {
 	tx.TXID = hash[:]
 }
 
+// 实现一个函数，是否是挖矿交易
+func (tx *Transaction) IsCoinbase() bool {
+	// 交易input只有一个
+	if len(tx.TXInputs) == 1 {
+		input := tx.TXInputs[0]
+		// 交易id为空
+		// 交易index是-1
+		if !bytes.Equal(tx.TXInputs[0].TXid, []byte{}) || input.Index != -1 {
+			return false
+		}
+	}
+	return true
+}
+
 // 2. 提供创建交易的方法(挖矿交易 coinbase)
 func NewCoinbaseTX(address string, data string) *Transaction {
 	// 挖矿交易的特点：只有一个input
