@@ -53,9 +53,9 @@ func NewBlock(txs []*Transaction, prevBlockHash []byte) *Block {
 		PrevHash:   prevBlockHash,
 		MerkelRoot: []byte{},
 		TimeStamp:  uint64(time.Now().Unix()),
-		Difficulty: 0,        //随便写的无效值
-		Nonce:      0,        // 无效值
-		Hash:       []byte{}, //先空 //TODO
+		Difficulty: 0, //随便写的无效值
+		Nonce:      0, // 无效值
+		Hash:       []byte{},
 		//Data:       []byte(data),
 		Transactions: txs,
 	}
@@ -142,6 +142,12 @@ func (block *Block) SetHash() {
 
 // 模拟梅克尔根。只对数据做拼接处理
 func (block *Block) MakeMerkelRoot() []byte {
-	//TODO
-	return []byte{}
+	// 梅克尔根是一个哈希的追加
+	// 将交易的哈希值拼接起来 再整体做哈希处理
+	var info []byte
+	for _, tx := range block.Transactions {
+		info = append(info, tx.TXID...)
+	}
+	hash := sha256.Sum256(info)
+	return hash[:]
 }

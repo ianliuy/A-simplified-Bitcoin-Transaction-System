@@ -2,12 +2,8 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
-
-func (cli *CLI) AddBlock(data string) {
-	//cli.bc.AddBlock(data)
-	fmt.Printf("add block success \n")
-}
 
 func (cli *CLI) PrintBlockChain() {
 	bc := cli.bc
@@ -19,7 +15,8 @@ func (cli *CLI) PrintBlockChain() {
 		fmt.Printf("版本号： %d\n", block.Version)
 		fmt.Printf("前区块哈希： %x\n", block.PrevHash)
 		fmt.Printf("梅克尔根： %x\n", block.MerkelRoot)
-		fmt.Printf("时间戳： %x\n", block.TimeStamp)
+		timeFormat := time.Unix(int64(block.TimeStamp), 0).Format("2006-01-02 15:04:05")
+		fmt.Printf("时间戳： %s\n", timeFormat)
 		fmt.Printf("难度值（随便写的）： %d\n", block.Difficulty)
 		fmt.Printf("随机数： %d\n", block.Nonce)
 		fmt.Printf("区块哈希： %x\n", block.Hash)
@@ -44,7 +41,6 @@ func (cli *CLI) Send(from, to string, amount float64, miner, data string) {
 	//fmt.Printf("func (cli *CLI) Send(from:%s, to:%s string, amount: %f float64, miner: %s, data: %s string) {\n", from, to, amount, miner, data)
 	//fmt.Printf("经过func (cli *CLI) Send，张三的余额为：\n")
 	//cli.GetBalance("张三")
-	// 具体的逻辑 TODO
 	// 1. 创建挖矿交易
 	coinbase := NewCoinbaseTX(miner, data)
 	//fmt.Printf("coinbase := NewCoinbaseTX(miner:%s, data:%s)\n", miner, data)

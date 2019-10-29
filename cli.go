@@ -13,7 +13,6 @@ type CLI struct {
 }
 
 const Usage = `
-	addBlock      --data     DATA          "add data to blockchain"
 	printChain                             "print all blockchain data"
     getBalance    --address  ADDRESS       "获取指定地址的余额"
     send FROM TO AMOUNT MINER DATA         "由FROM转AMOUNT给TO，由MINER挖矿，同时写入DATA"
@@ -21,17 +20,7 @@ const Usage = `
 
 // 接受参数的动作放到一个函数中
 func (cli *CLI) Run() {
-	// ./block printChain
-	// ./block addBlock --data "HelloWorld"
-	// 1. 得到所有的命令
 	args := os.Args
-	/*fmt.Printf("len(args)=%v\n", len(args))
-	fmt.Printf("args[0]=%v\n", args[0])
-	fmt.Printf("args[1]=%v\n", args[1])
-	fmt.Printf("args[2]=%v\n", args[2])
-	fmt.Printf("args[3]=%v\n", args[3])
-	fmt.Printf("args[4]=%v\n", args[4])
-	fmt.Println("args[1]:", args[1])*/
 	if len(args) < 2 {
 		// fmt.Printf("Invalid command")
 		// fmt.Printf(Usage)
@@ -42,23 +31,6 @@ func (cli *CLI) Run() {
 		cmd = args[1]
 	}
 	switch cmd {
-	case "addBlock":
-		// 添加区块
-		fmt.Printf("add block\n")
-
-		// 确保命令有效
-		if len(args) == 4 && args[2] == "--data" {
-			// 获取命令的数据
-			// 1. 获取数据
-			data := args[3]
-			cli.AddBlock(data)
-		} else {
-			fmt.Printf("errors occur")
-			fmt.Printf(Usage)
-		}
-
-		// 2. 使用bc添加区块AddBlock
-
 	case "printChain":
 		// 打印区块
 		fmt.Printf("print block\n")
