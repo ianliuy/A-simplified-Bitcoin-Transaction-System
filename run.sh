@@ -1,5 +1,6 @@
 rm *.db
-go run *.go
+"1111----------------------------"
 go run *.go printChain
+"3333----------------------------"
 go run *.go getBalance --address genesis
-go run *.go send genesis aaa 10 minerbbb "1st transaction"
+"4444----------------------------"

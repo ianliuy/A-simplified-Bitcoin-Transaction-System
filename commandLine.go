@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func (cli *CLI) AddBlock(data string) {
 	//cli.bc.AddBlock(data)
@@ -36,4 +38,20 @@ func (cli *CLI) GetBalance(address string) {
 		total += utxos.Value
 	}
 	fmt.Printf("\"%s\"的余额为：%f\n", address, total)
+}
+
+func (cli *CLI) Send(from, to string, amount float64, miner, data string) {
+	fmt.Printf("from: %s\n", from)
+	fmt.Printf("to: %s\n", to)
+	fmt.Printf("amount: %f\n", amount)
+	fmt.Printf("miner: %s\n", miner)
+	fmt.Printf("data: %s\n", data)
+	// 具体的逻辑 TODO
+	// 1. 创建挖矿交易
+	coinbase := NewCoinbaseTX(miner, data)
+	// 2. 创建一个普通交易
+	tx := NewTransaction(from, to, amount, cli.bc)
+	// 3. 添加区块
+	cli.bc.AddBlock([]*Transaction{coinbase, tx})
+	fmt.Printf("transact success")
 }

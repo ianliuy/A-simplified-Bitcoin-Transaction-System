@@ -84,6 +84,7 @@ func (cli *CLI) Run() {
 		amount, _ := strconv.ParseFloat(args[4], 64)
 		miner := args[5]
 		data := args[6]
+		fmt.Printf("from:%s,to:%s,amount:%f,miner:%s,data:%s", from, to, amount, miner, data)
 		cli.Send(from, to, amount, miner, data)
 
 	default:
@@ -93,12 +94,4 @@ func (cli *CLI) Run() {
 	// 分析命令
 	// 1. 添加区块 2. 打印区块
 	// 执行相应动作
-}
-func (cli *CLI) Send(from, to string, amount float64, miner, data string) {
-	fmt.Printf("from: %s\n", from)
-	fmt.Printf("to: %s\n", to)
-	fmt.Printf("amount:%f\n", amount)
-	fmt.Printf("miner: %s\n", miner)
-	fmt.Printf("data: %s\n", data)
-	// 具体的逻辑 TODO
 }
