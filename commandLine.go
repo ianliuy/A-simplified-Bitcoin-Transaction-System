@@ -41,17 +41,24 @@ func (cli *CLI) GetBalance(address string) {
 }
 
 func (cli *CLI) Send(from, to string, amount float64, miner, data string) {
-	fmt.Printf("from: %s\n", from)
-	fmt.Printf("to: %s\n", to)
-	fmt.Printf("amount: %f\n", amount)
-	fmt.Printf("miner: %s\n", miner)
-	fmt.Printf("data: %s\n", data)
+	//fmt.Printf("func (cli *CLI) Send(from:%s, to:%s string, amount: %f float64, miner: %s, data: %s string) {\n", from, to, amount, miner, data)
+	//fmt.Printf("经过func (cli *CLI) Send，张三的余额为：\n")
+	//cli.GetBalance("张三")
 	// 具体的逻辑 TODO
 	// 1. 创建挖矿交易
 	coinbase := NewCoinbaseTX(miner, data)
+	//fmt.Printf("coinbase := NewCoinbaseTX(miner:%s, data:%s)\n", miner, data)
+	//fmt.Printf("经过NewCoinbaseTX，张三的余额为：\n")
+	//cli.GetBalance("张三")
 	// 2. 创建一个普通交易
 	tx := NewTransaction(from, to, amount, cli.bc)
+	//fmt.Printf("tx := NewTransaction(from:%s, to:%s, amount:%s, cli.bc)\n", from, to, amount)
+	//fmt.Printf("经过NewTransaction，张三的余额为：\n")
+	//cli.GetBalance("张三")
 	// 3. 添加区块
 	cli.bc.AddBlock([]*Transaction{coinbase, tx})
-	fmt.Printf("transact success")
+	//fmt.Printf("cli.bc.AddBlock([]*Transaction{coinbase, tx}), coinbase.TXID:%v\n", string(coinbase.TXID))
+	fmt.Printf("经过cli.bc.AddBlock,")
+	cli.GetBalance("张三")
+	fmt.Printf("transact success\n")
 }

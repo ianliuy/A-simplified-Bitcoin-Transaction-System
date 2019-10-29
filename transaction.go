@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-const reward = 12.5
+const reward = 50
 
 // 1. 定义交易结构
 type Transaction struct {
@@ -92,7 +92,7 @@ func NewTransaction(from, to string, amount float64, bc *BlockChain) *Transactio
 	// func (bc *BlockChain) FindNeedUTXOs(from string, amount float64) (map[string][]uint64, float64) {
 	utxos, resValue := bc.FindNeedUTXOs(from, amount)
 	if resValue < amount {
-		fmt.Printf("余额不足 失败")
+		fmt.Printf("余额不足 失败\n")
 		return nil
 	}
 	var inputs []TXInput

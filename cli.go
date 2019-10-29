@@ -44,7 +44,7 @@ func (cli *CLI) Run() {
 	switch cmd {
 	case "addBlock":
 		// 添加区块
-		fmt.Printf("add block")
+		fmt.Printf("add block\n")
 
 		// 确保命令有效
 		if len(args) == 4 && args[2] == "--data" {
@@ -84,7 +84,7 @@ func (cli *CLI) Run() {
 		amount, _ := strconv.ParseFloat(args[4], 64)
 		miner := args[5]
 		data := args[6]
-		fmt.Printf("from:%s,to:%s,amount:%f,miner:%s,data:%s", from, to, amount, miner, data)
+		fmt.Printf("转账信息： %s %s %f %s %s\n", from, to, amount, miner, data)
 		cli.Send(from, to, amount, miner, data)
 
 	default:
