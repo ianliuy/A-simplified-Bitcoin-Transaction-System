@@ -73,5 +73,12 @@ func (cli *CLI) NewWallet() {
 	//fmt.Printf("私钥：%v\n", wallet.Private)
 	//fmt.Printf("公钥：%v\n", wallet.PubKey)
 	//fmt.Printf("地址：%v\n", address)
+}
 
+func (cli *CLI) listAddresses() {
+	ws := NewWallets()
+	addresses := ws.ListAllAddresses()
+	for i, address := range addresses {
+		fmt.Printf("address %v: %v\n", i, address)
+	}
 }

@@ -68,3 +68,10 @@ func (ws *Wallets) loadFile() {
 }
 
 // 读取文件方法，把所有的wallet读取出来
+func (ws *Wallets) ListAllAddresses() []string {
+	var addresses []string
+	for address := range ws.WalletsMap {
+		addresses = append(addresses, address)
+	}
+	return addresses
+}
