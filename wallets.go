@@ -18,8 +18,7 @@ type Wallets struct {
 func NewWallets() *Wallets {
 	var ws Wallets
 	ws.WalletsMap = make(map[string]*Wallet)
-	//ws := loadFile()
-
+	ws.loadFile()
 	return &ws
 }
 
@@ -52,5 +51,20 @@ func (ws *Wallets) saveToFile() {
 }
 
 // 保存方法，把新建的wallet添加进去
+func (ws *Wallets) loadFile() {
+
+	content, err := ioutil.ReadFile("wallet.dat")
+	if err != nil {
+		log.Panic(err)
+	}
+	gob.Register(elliptic.P256())
+	decoder := gob.NewDecoder(bytes.NewReader(content))
+	var wslocal Wallets
+	err = decoder.Decode(&wslocal)
+	if err != nil {
+		log.Panic(err)
+	}
+	ws.WalletsMap = wslocal.WalletsMap
+}
 
 // 读取文件方法，把所有的wallet读取出来
