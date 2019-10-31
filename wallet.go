@@ -1,0 +1,63 @@
+package main
+
+import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/sha256"
+	"fmt"
+	"github.com/btcsuite/btcutil/base58"
+	"golang.org/x/crypto/ripemd160"
+	"log"
+)
+
+type Wallet struct {
+	Private *ecdsa.PrivateKey
+	PubKey  []byte
+}
+
+// 创建钱包
+func NewWallet() *Wallet {
+	// 生成曲线
+	curve := elliptic.P256()
+	// 创建私钥
+	privateKey, err := ecdsa.GenerateKey(curve, rand.Reader)
+	if err != nil {
+		fmt.Printf("aaaaa\n")
+		log.Panic(err)
+	}
+	pubKeyOrig := privateKey.PublicKey
+	pubKey := append(pubKeyOrig.X.Bytes(), pubKeyOrig.Y.Bytes()...)
+	return &Wallet{Private: privateKey, PubKey: pubKey}
+}
+
+// 生成地址
+
+func (w *Wallet) NewAddress() string {
+	pubKey := w.PubKey
+	hash := sha256.Sum256(pubKey)
+
+	// 理解为编码器
+	rip160hasher := ripemd160.New()
+	_, err := rip160hasher.Write(hash[:])
+	if err != nil {
+		fmt.Println("bbbbb")
+		log.Panic(err)
+	}
+	// 返回rip160的哈希结果
+	rip160HashValue := rip160hasher.Sum(nil)
+	version := byte(00)
+	// 拼接version
+	payload := append([]byte{version}, rip160HashValue...)
+	// checksum
+	// 两次sha256
+	hash1 := sha256.Sum256(payload)
+	hash2 := sha256.Sum256(hash1[:])
+	// 前4字节 校验码
+	checkCode := hash2[:4]
+	// 25字节数据
+	payload = append(payload, checkCode...)
+	// go语言库：btcd 这个是go语言实现的比特币全节点源码
+	address := base58.Encode(payload)
+	return address
+}
