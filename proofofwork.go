@@ -22,6 +22,7 @@ func NewProofOfWork(block *Block) *ProofOfWork {
 		block: block,
 	}
 	// 指定难度值
+	GetTargetStr()
 	targetStr := "0010000000000000000000000000000000000000000000000000000000000000"
 	// 引入辅助变量。str->big.int
 	temInt := big.Int{}

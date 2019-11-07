@@ -49,14 +49,13 @@ func Uint64ToByte(num uint64) []byte {
 // 2. 创建区块
 func NewBlock(txs []*Transaction, prevBlockHash []byte) *Block {
 	block := Block{
-		Version:    00,
-		PrevHash:   prevBlockHash,
-		MerkelRoot: []byte{},
-		TimeStamp:  uint64(time.Now().Unix()),
-		Difficulty: 0, //随便写的无效值
-		Nonce:      0, // 无效值
-		Hash:       []byte{},
-		//Data:       []byte(data),
+		Version:      00,
+		PrevHash:     prevBlockHash,
+		MerkelRoot:   []byte{},
+		TimeStamp:    uint64(time.Now().Unix()),
+		Difficulty:   0, //随便写的无效值
+		Nonce:        0, // 无效值
+		Hash:         []byte{},
 		Transactions: txs,
 	}
 	block.MerkelRoot = block.MakeMerkelRoot()

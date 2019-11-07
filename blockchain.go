@@ -123,7 +123,7 @@ func (bc *BlockChain) PrintChain() {
 			fmt.Printf("难度值（随便写的）： %d\n", block.Difficulty)
 			fmt.Printf("随机数： %d\n", block.Nonce)
 			fmt.Printf("区块哈希： %x\n", block.Hash)
-			fmt.Printf("区块数据： %s\n", block.Transactions[0].TXInputs[0].Sig)
+			fmt.Printf("区块数据： %s\n", block.Transactions[0].TXInputs[0].PubKey)
 			return nil
 		})
 		return nil
@@ -131,13 +131,13 @@ func (bc *BlockChain) PrintChain() {
 }
 
 // 找到指定地址的所有UTXO
-func (bc *BlockChain) FindUTXOs(address string) []TXOutput {
+func (bc *BlockChain) FindUTXOs(pubKeyHash []byte) []TXOutput {
 	var UTXO []TXOutput
 
-	txs := bc.FindUTXOTransactions(address)
+	txs := bc.FindUTXOTransactions(pubKeyHash)
 	for _, tx := range txs {
 		for _, output := range tx.TXOutputs {
-			if address == output.PubKeyHash {
+			if bytes.Equal(pubKeyHash, output.PubKeyHash) {
 				UTXO = append(UTXO, output)
 			}
 		}
@@ -145,14 +145,17 @@ func (bc *BlockChain) FindUTXOs(address string) []TXOutput {
 	return UTXO
 }
 
-func (bc *BlockChain) FindNeedUTXOs(from string, amount float64) (map[string][]uint64, float64) {
+func (bc *BlockChain) FindNeedUTXOs(senderPubKeyHash []byte, amount float64) (map[string][]uint64, float64) {
 	utxos := make(map[string][]uint64)
 	var calc float64
 
-	txs := bc.FindUTXOTransactions(from)
+	txs := bc.FindUTXOTransactions(senderPubKeyHash)
+
 	for _, tx := range txs {
 		for i, output := range tx.TXOutputs {
-			if from == output.PubKeyHash {
+			//if from == output.PubKeyHash {
+			// 变成了两个byte数组的比较
+			if bytes.Equal(senderPubKeyHash, output.PubKeyHash) {
 				// 3. 比较一下是否满足转账需求
 				//   a. 满足的话 直接返回UTXO， calc
 				//   b. 不满足的话，继续统计
@@ -175,7 +178,7 @@ func (bc *BlockChain) FindNeedUTXOs(from string, amount float64) (map[string][]u
 	return utxos, calc
 }
 
-func (bc *BlockChain) FindUTXOTransactions(address string) []*Transaction {
+func (bc *BlockChain) FindUTXOTransactions(senderPubKeyHash []byte) []*Transaction {
 	// var UTXO []TXOutput
 	var txs []*Transaction //存储所有包含utxo的交易
 	// 定义一个map保存消费过的utxo，key是output交易过的id，value是交易中索引的数组
@@ -211,7 +214,7 @@ func (bc *BlockChain) FindUTXOTransactions(address string) []*Transaction {
 					}
 				}
 				// 如果这个output的地址与目标地址相同，返回utxo数组中
-				if output.PubKeyHash == address {
+				if bytes.Equal(output.PubKeyHash, senderPubKeyHash) {
 					// UTXO = append(UTXO, output)
 					//!!!!重点：返回所有包含我的utxo的交易 集合
 					txs = append(txs, tx)
@@ -226,7 +229,9 @@ func (bc *BlockChain) FindUTXOTransactions(address string) []*Transaction {
 				for _, input := range tx.TXInputs {
 					//判断当前input是否和目标一致
 					// 如果相同就加进去
-					if input.Sig == address {
+					//if input.PubKey == senderPubKeyHash {
+					pubKeyHash := HashPubKey(input.PubKey)
+					if bytes.Equal(pubKeyHash, senderPubKeyHash) {
 						//spentOutputs := make(map[string][]int64)
 						// indexArray := spentOutputs[string(input.TXid)]
 						// indexArray = append(indexArray, input.Index)
