@@ -1,8 +1,8 @@
 rm *.db
 go run *.go
 go run *.go send aaa bbb 10 eee "aaa->bbb:10"
-#go run *.go printChain
-#bash checkBalance.sh
+##go run *.go printChain
+##bash checkBalance.sh
 go run *.go send aaa ccc 20 eee "aaa->ccc:20"
 #go run *.go printChain
 #bash checkBalance.sh

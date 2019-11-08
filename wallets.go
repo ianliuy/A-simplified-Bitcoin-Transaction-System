@@ -26,8 +26,6 @@ func NewWallets() *Wallets {
 func (ws *Wallets) CreatWallet() string {
 	wallet := NewWallet()
 	address := wallet.NewAddress()
-	//var wallets Wallets
-	//wallets.WalletsMap = make(map[string]*Wallet)
 	ws.WalletsMap[address] = wallet
 	ws.saveToFile()
 	return address

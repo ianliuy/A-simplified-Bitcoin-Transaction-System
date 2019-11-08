@@ -16,7 +16,7 @@ type Wallet struct {
 	PubKey  []byte
 }
 
-// 创建钱包
+// creat New Wallet with privateKey and publicKey
 func NewWallet() *Wallet {
 	// 生成曲线
 	curve := elliptic.P256()

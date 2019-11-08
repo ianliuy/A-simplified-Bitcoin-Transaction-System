@@ -70,7 +70,7 @@ func NewBlockChain(address string) *BlockChain {
 func GenesisBlock(address string) *Block {
 	coinbase := NewCoinbaseTX(address, "genesisBlock")
 	// func NewBlock(txs []*Transaction, prevBlockHash []byte) *Block {
-	return NewBlock([]*Transaction{coinbase}, []byte{})
+	return NewBlockblock([]*Transaction{coinbase}, []byte{})
 }
 
 // 5. 添加区块
@@ -85,7 +85,7 @@ func (bc *BlockChain) AddBlock(txs []*Transaction) {
 		if bucket == nil {
 			log.Panic("errors occur: bucket is null")
 		}
-		block := NewBlock(txs, lastHash)
+		block := NewBlock(txs, lastHash, bc)
 		// 写数据
 		// hash作为key block的字节流作为value
 		// func (b *Bucket) Put(key []byte, value []byte) error {
@@ -130,6 +130,20 @@ func (bc *BlockChain) PrintChain() {
 	})
 }
 
+func (bc *BlockChain) GetBlockHeight() int {
+	it := bc.NewIterator()
+	blockHeight := 0
+	for {
+		block := it.Next()
+		if len(block.PrevHash) == 0 {
+			fmt.Printf("over")
+			break
+		}
+		blockHeight++
+	}
+	return blockHeight
+}
+
 // 找到指定地址的所有UTXO
 func (bc *BlockChain) FindUTXOs(pubKeyHash []byte) []TXOutput {
 	var UTXO []TXOutput
@@ -166,7 +180,7 @@ func (bc *BlockChain) FindNeedUTXOs(senderPubKeyHash []byte, amount float64) (ma
 					calc += output.Value
 					// 加完之后满足条件了
 					if calc >= amount {
-						fmt.Printf("找到了满足的金额:%f\n", calc)
+						fmt.Printf("found satisfied amount: %f\n", calc)
 						return utxos, calc
 					} else {
 						fmt.Printf("当前金额还不满足，当前累计：%f，目标金额：%f\n", calc, amount)
@@ -179,12 +193,48 @@ func (bc *BlockChain) FindNeedUTXOs(senderPubKeyHash []byte, amount float64) (ma
 }
 
 func (bc *BlockChain) FindUTXOTransactions(senderPubKeyHash []byte) []*Transaction {
+	var txs []*Transaction //存储所有包含utxo的交易
+	spentOutputs := make(map[string][]int64)
+	it := bc.NewIterator()
+	for {
+		block := it.Next()
+		for _, tx := range block.Transactions {
+		OUTPUT:
+			for i, output := range tx.TXOutputs {
+				if spentOutputs[string(tx.TXID)] != nil {
+					for _, j := range spentOutputs[string(tx.TXID)] {
+						if int64(i) == j {
+							continue OUTPUT
+						}
+					}
+				}
+				if bytes.Equal(output.PubKeyHash, senderPubKeyHash) {
+					txs = append(txs, tx)
+				}
+			}
+			if !tx.IsCoinbase() {
+				for _, input := range tx.TXInputs {
+					pubKeyHash := HashPubKey(input.PubKey)
+					if bytes.Equal(pubKeyHash, senderPubKeyHash) {
+						spentOutputs[string(input.TXid)] = append(spentOutputs[string(input.TXid)], input.Index)
+					}
+				}
+			} else {
+			}
+		}
+		if len(block.PrevHash) == 0 {
+			break
+		}
+	}
+	return txs
+}
+
+func (bc *BlockChain) FindUTXOTransactionsAAA(senderPubKeyHash []byte) []*Transaction {
 	// var UTXO []TXOutput
 	var txs []*Transaction //存储所有包含utxo的交易
 	// 定义一个map保存消费过的utxo，key是output交易过的id，value是交易中索引的数组
 	// map[交易id][]int64
 	spentOutputs := make(map[string][]int64)
-
 	// 先遍历区块
 	// 再遍历交易
 	// 再遍历output，找到与自己相关的UTXO（再添加output之前检查是否已经消耗过）
@@ -192,12 +242,12 @@ func (bc *BlockChain) FindUTXOTransactions(senderPubKeyHash []byte) []*Transacti
 	// 创建迭代器
 	it := bc.NewIterator()
 	for {
-		// 1. 遍历区块
+		// 1. iterate block
 		block := it.Next()
-		// 2. 遍历交易
+		// 2. iterate transactions
 		for _, tx := range block.Transactions {
 			// fmt.Printf("current txid: %x\n", tx.TXID)
-			// 3.遍历output
+			// 3.iterate output(s)
 		OUTPUT:
 			for i, output := range tx.TXOutputs {
 				// fmt.Printf("current idx: %d\n", i)

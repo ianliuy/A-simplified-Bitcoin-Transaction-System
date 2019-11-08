@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/gob"
+	"fmt"
 	"log"
 	"time"
 )
@@ -47,7 +48,7 @@ func Uint64ToByte(num uint64) []byte {
 }
 
 // 2. 创建区块
-func NewBlock(txs []*Transaction, prevBlockHash []byte) *Block {
+func NewBlock(txs []*Transaction, prevBlockHash []byte, bc *BlockChain) *Block {
 	block := Block{
 		Version:      00,
 		PrevHash:     prevBlockHash,
@@ -60,15 +61,51 @@ func NewBlock(txs []*Transaction, prevBlockHash []byte) *Block {
 	}
 	block.MerkelRoot = block.MakeMerkelRoot()
 	//block.SetHash()
+
+	heightNow := bc.GetBlockHeight() + 1
+	timeStamp := block.TimeStamp
+	difficulty := block.GetNowDifficulty(bc, heightNow, timeStamp)
+	block.Difficulty = difficulty
+
 	// 创建一个pow对象
-	pow := NewProofOfWork(&block)
+	pow := NewProofOfWork(&block, difficulty)
 	// 查找随机数 不停进行哈希运算
 	hash, nonce := pow.Run()
-
 	// 根据挖矿结果 不断对区块数据进行补充
 	block.Hash = hash
 	block.Nonce = nonce
+	block.Difficulty = difficulty
 	return &block
+}
+
+func (block *Block) GetNowDifficulty(bc *BlockChain, heightNow int, timeStamp uint64) uint64 {
+	// 调用迭代器 返回每一个数据
+	blockHeight := bc.GetBlockHeight()
+	it := bc.NewIterator()
+	blockNumberIn5Min := blockHeight
+	for {
+		block := it.Next()
+
+		// 计算5分钟内产生了多少个区块
+		if timeStamp-block.TimeStamp >= 300 {
+
+			blockNumberIn5Min = heightNow - blockHeight
+			break
+		}
+		if len(block.PrevHash) == 0 {
+			fmt.Printf("over")
+			blockNumberIn5Min = heightNow - blockHeight
+			break
+		}
+		blockHeight--
+	}
+	nowDifficulty := block.CalculateDifficulty(blockNumberIn5Min)
+	return nowDifficulty
+}
+
+func (block *Block) CalculateDifficulty(blockNumberIn5Min int) uint64 {
+
+	return 1234567
 }
 
 // 序列化 把一个自定义的数据转化为字节流
@@ -149,4 +186,29 @@ func (block *Block) MakeMerkelRoot() []byte {
 	}
 	hash := sha256.Sum256(info)
 	return hash[:]
+}
+func NewBlockblock(txs []*Transaction, prevBlockHash []byte) *Block {
+	block := Block{
+		Version:      00,
+		PrevHash:     prevBlockHash,
+		MerkelRoot:   []byte{},
+		TimeStamp:    uint64(time.Now().Unix()),
+		Difficulty:   0, //随便写的无效值
+		Nonce:        0, // 无效值
+		Hash:         []byte{},
+		Transactions: txs,
+	}
+	block.MerkelRoot = block.MakeMerkelRoot()
+	//block.SetHash()
+	// 创建一个pow对象
+
+	//difficulty := block.GetNowDifficulty()
+	//pow := NewProofOfWork(&block, difficulty)
+	// 查找随机数 不停进行哈希运算
+	//hash, nonce := pow.Run()
+	// 根据挖矿结果 不断对区块数据进行补充
+	//block.Hash = hash
+	//block.Nonce = nonce
+	//block.Difficulty = difficulty
+	return &block
 }

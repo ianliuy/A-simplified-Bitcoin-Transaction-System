@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"math/big"
+	"strconv"
 )
 
 // 定义一个工作量证明的结构
@@ -17,13 +18,20 @@ type ProofOfWork struct {
 
 // 2. 提供创建pow的函数
 // NewProofofWork(参数)
-func NewProofOfWork(block *Block) *ProofOfWork {
+func NewProofOfWork(block *Block, difficulty uint64) *ProofOfWork {
 	pow := ProofOfWork{
 		block: block,
 	}
 	// 指定难度值
-	GetTargetStr()
-	targetStr := "0010000000000000000000000000000000000000000000000000000000000000"
+	// targetStr := GetTargetStr()
+	targetStr := strconv.Itoa(int(difficulty))
+	for {
+		if len(targetStr) == 64 {
+			break
+		}
+		targetStr = string('0') + targetStr
+	}
+	targetStr = "0010000000000000000000000000000000000000000000000000000000000000"
 	// 引入辅助变量。str->big.int
 	temInt := big.Int{}
 	// 16进制格式
@@ -40,7 +48,7 @@ func (pow *ProofOfWork) Run() ([]byte, uint64) {
 	var nonce uint64
 	block := pow.block
 	var hash [32]byte
-	fmt.Printf("开始挖矿： ")
+	fmt.Printf("start mining: ")
 	for {
 		// 1. 拼装数据（区块、随机数）
 		tmp := [][]byte{
