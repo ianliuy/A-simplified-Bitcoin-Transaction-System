@@ -23,11 +23,14 @@ func NewWallet() *Wallet {
 	// 创建私钥
 	privateKey, err := ecdsa.GenerateKey(curve, rand.Reader)
 	if err != nil {
-		fmt.Printf("aaaaa\n")
+		fmt.Printf("errors occur when Generate Key\n")
 		log.Panic(err)
 	}
 	pubKeyOrig := privateKey.PublicKey
 	pubKey := append(pubKeyOrig.X.Bytes(), pubKeyOrig.Y.Bytes()...)
+	/*	fmt.Printf("PriviteKeyNum: %v\n", privateKey.D)
+		fmt.Printf("PublicKeyNum1: %v\n", privateKey.PublicKey.X)
+		fmt.Printf("PublicKeyNum2: %v\n", privateKey.PublicKey.Y)*/
 	return &Wallet{Private: privateKey, PubKey: pubKey}
 }
 

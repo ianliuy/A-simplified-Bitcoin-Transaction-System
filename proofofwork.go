@@ -86,5 +86,3 @@ func (pow *ProofOfWork) Run() ([]byte, uint64) {
 
 	//return hash[:], nonce
 }
-
-// IsValid

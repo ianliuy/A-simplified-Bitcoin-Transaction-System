@@ -61,7 +61,7 @@ func (cli *CLI) listAddresses() {
 	ws := NewWallets()
 	addresses := ws.ListAllAddresses()
 	for i, address := range addresses {
-		fmt.Printf("address %v: %v           \n", i, address)
-		//cli.GetBalance(address)
+		fmt.Printf("address %v: %v           ", i, address)
+		cli.GetBalance(address)
 	}
 }

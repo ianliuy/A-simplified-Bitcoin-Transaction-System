@@ -86,9 +86,8 @@ func (block *Block) GetNowDifficulty(bc *BlockChain, heightNow int, timeStamp ui
 	for {
 		block := it.Next()
 
-		// 计算5分钟内产生了多少个区块
+		// the number of blocks that generated in recent 5 mins
 		if timeStamp-block.TimeStamp >= 300 {
-
 			blockNumberIn5Min = heightNow - blockHeight
 			break
 		}
@@ -180,11 +179,14 @@ func (block *Block) SetHash() {
 func (block *Block) MakeMerkelRoot() []byte {
 	// 梅克尔根是一个哈希的追加
 	// 将交易的哈希值拼接起来 再整体做哈希处理
-	var info []byte
+	/*var info []byte
 	for _, tx := range block.Transactions {
 		info = append(info, tx.TXID...)
 	}
-	hash := sha256.Sum256(info)
+	hash := sha256.Sum256(info)*/
+	// func NewMerkleTree(block *Block) []MerkleNode {
+	merkleTree := NewMerkleTree(block)
+	hash := merkleTree[len(merkleTree)-1].Data
 	return hash[:]
 }
 func NewBlockblock(txs []*Transaction, prevBlockHash []byte) *Block {

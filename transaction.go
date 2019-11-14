@@ -161,7 +161,3 @@ func NewTransaction(from, to string, amount float64, bc *BlockChain) *Transactio
 	tx.SetHash()
 	return &tx
 }
-
-// 4. 根据交易调整程序
-
-//
