@@ -5,4 +5,5 @@
 # *.db
 # *.dat
 /.idea
+*.sh
 /demo

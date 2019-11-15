@@ -54,8 +54,8 @@ func NewBlock(txs []*Transaction, prevBlockHash []byte, bc *BlockChain) *Block {
 		PrevHash:     prevBlockHash,
 		MerkelRoot:   []byte{},
 		TimeStamp:    uint64(time.Now().Unix()),
-		Difficulty:   0, //随便写的无效值
-		Nonce:        0, // 无效值
+		Difficulty:   0,
+		Nonce:        0,
 		Hash:         []byte{},
 		Transactions: txs,
 	}
@@ -67,11 +67,8 @@ func NewBlock(txs []*Transaction, prevBlockHash []byte, bc *BlockChain) *Block {
 	difficulty := block.GetNowDifficulty(bc, heightNow, timeStamp)
 	block.Difficulty = difficulty
 
-	// 创建一个pow对象
 	pow := NewProofOfWork(&block, difficulty)
-	// 查找随机数 不停进行哈希运算
 	hash, nonce := pow.Run()
-	// 根据挖矿结果 不断对区块数据进行补充
 	block.Hash = hash
 	block.Nonce = nonce
 	block.Difficulty = difficulty
@@ -79,7 +76,6 @@ func NewBlock(txs []*Transaction, prevBlockHash []byte, bc *BlockChain) *Block {
 }
 
 func (block *Block) GetNowDifficulty(bc *BlockChain, heightNow int, timeStamp uint64) uint64 {
-	// 调用迭代器 返回每一个数据
 	blockHeight := bc.GetBlockHeight()
 	it := bc.NewIterator()
 	blockNumberIn5Min := blockHeight
