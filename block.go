@@ -113,7 +113,7 @@ func (block *Block) Serialize() []byte {
 	// gob.encode
 	var buffer bytes.Buffer
 
-	// 使用gob进行序列化u得到字节流
+	// 使用gob进行序列化得到字节流
 	// 定义一个编码器
 	// 使用编码器进行编码
 	/*	type Encoder struct {

@@ -2,7 +2,7 @@
 *.log
 *.apk
 *.txt
-*.db
-*.dat
+# *.db
+# *.dat
 /.idea
 /demo

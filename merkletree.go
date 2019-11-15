@@ -32,12 +32,10 @@ func NewMerkleTree(block *Block) []MerkleNode {
 	if len(data)%2 != 0 {
 		data = append(data, data[len(data)-1])
 	}
-
 	for _, dataitem := range data {
 		node := NewMerkleNode(nil, nil, dataitem.TXID)
 		nodes = append(nodes, *node)
 	}
-
 	for i := 0; i < len(data)/2; i++ {
 		var newNodes []MerkleNode
 
@@ -48,6 +46,5 @@ func NewMerkleTree(block *Block) []MerkleNode {
 
 		nodes = newNodes
 	}
-
 	return nodes
 }
