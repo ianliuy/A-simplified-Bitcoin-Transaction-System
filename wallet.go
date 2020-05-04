@@ -21,11 +21,11 @@ func NewWallet() *Wallet {
 	// 生成曲线
 	curve := elliptic.P256()
 	// 创建私钥
-	privateKey, err := ecdsa.GenerateKey(curve, rand.Reader)
-	if err != nil {
-		fmt.Printf("errors occur when Generate Key\n")
-		log.Panic(err)
-	}
+	privateKey, _ := ecdsa.GenerateKey(curve, rand.Reader)
+	//if err != nil {
+	//	fmt.Printf("errors occur when Generate Key\n")
+	//	log.Panic(err)
+	//}
 	pubKeyOrig := privateKey.PublicKey
 	pubKey := append(pubKeyOrig.X.Bytes(), pubKeyOrig.Y.Bytes()...)
 	/*	fmt.Printf("PriviteKeyNum: %v\n", privateKey.D)
